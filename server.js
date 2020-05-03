@@ -1,5 +1,6 @@
 var express = require('express');
 var exphbs = require("express-handlebars");
+const bookController = require('./controller/bookController');
 
 const db = require('./models');
 
@@ -16,8 +17,36 @@ app.use(express.json());
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+app.post("/api/author", function(req, res) {
+    //we have access to a req.body!!!
+    db.Author.create({
+        name: req.body.name
+    }).then(data => {
+        // res.send("success");
+        // res.status(200).end();
+        res.json(data);
+    }).catch(err => {
+        res.send("oh no theres been an error")
+    });
+
+});
+/*
+{
+    "name": "Arnold",
+    "title": "terminator"
+}
+
+*/
+
+app.post("/api/book", function(req, res) {
+bookController.addBook(req, res);
+    //we have access to a req.body!!!
+
+});
+
+
 app.get("*", function(req, res) {
-    res.send("Hello world!")
+    res.send("oops didnt mean to land here")
 })
 
 db.sequelize.sync({ force: true }).then(function() {
